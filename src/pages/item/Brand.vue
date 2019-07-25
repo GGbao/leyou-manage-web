@@ -29,49 +29,9 @@
           <v-btn icon @click="editBrand(props.item)">
             <i class="el-icon-edit"/>
           </v-btn>
-         <!-- <v-btn icon @click="deleteBrand(props.item)">
+          <v-btn icon @click="deleteBrand(props.item.id)">
             <i class="el-icon-delete"/>
-          </v-btn>-->
-
-
-
-          <v-layout row justify-center >
-            <v-btn
-              color="primary"
-              dark
-              @click.stop="dialog = true;delId=props.item.id" :delId="delId" >
-              <i class="el-icon-delete"/>
-            </v-btn>
-
-            <v-dialog
-              :isDel="isDel"
-              v-model="dialog"
-              max-width="290"
-            >
-              <v-card>
-                <v-card-title class="headline">确定删除此品牌目录?</v-card-title>
-
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-
-                  <v-btn
-                    color="green darken-1"
-                    flat="flat"
-                    @click="dialog = false"
-                  >
-                    取消
-                  </v-btn>
-                  <v-btn
-                    color="green darken-1"
-                    flat="flat"
-                    @click="dialog=false;isDel=true;deleteBrand(delId)"
-                  >
-                    确定
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-          </v-layout>
+          </v-btn>
         </td>
       </template>
     </v-data-table>
@@ -100,6 +60,12 @@
 
   export default {
     name: "brand",
+    props: {
+      page: {
+        type: Number,
+        default:1,
+      },
+    },
     data() {
       return {
         search: '', // 搜索过滤字段
@@ -119,8 +85,6 @@
         isEdit: false, // 是否是编辑
         delBrand :{},
         dialog: false,//是否确定删除
-        isDel:false,
-        delId:0,
       }
     },
     mounted() { // 渲染后执行
@@ -132,7 +96,9 @@
         deep: true, // deep为true，会监视pagination的属性及属性中的对象属性变化
         handler() {
           // 变化后的回调函数，这里我们再次调用getDataFromServer即可
+          console.log(this.pagination.page)
           this.getDataFromServer();
+
         }
       },
       search: { // 监视搜索字段
@@ -154,6 +120,19 @@
             desc: this.pagination.descending// 是否降序
           }
         }).then(resp => { // 这里使用箭头函数
+          this.brands = resp.data.items;
+          this.totalBrands = resp.data.total;
+          // 完成赋值后，把加载状态赋值为false
+          this.loading = false;
+        })
+      },
+      loadData(){
+        this.$http.get("/item/brand/page/",{
+        params: {
+          page:this.pagination.page,
+        }
+
+      }).then(resp => { // 这里使用箭头函数
           this.brands = resp.data.items;
           this.totalBrands = resp.data.total;
           // 完成赋值后，把加载状态赋值为false
@@ -183,26 +162,27 @@
             this.oldBrand.categories = data;
           })
       },
-      deleteBrand(delId) {
-        console.log(delId);
-        if (this.isDel) {
-          //根据id删除品牌
-          this.$http.get("/item/brand/delete/" + delId)
-            .then(() => {
-              // 关闭窗口
-              this.dialog = false;
-              this.$message.success("删除成功！");
-              // this.getDataFromServer();
-              this.isDel = false;
-              this.getDataFromServer();
 
+      deleteBrand(id) {
+        console.log(id);
+        this.$message.confirm("确认要删除此品牌吗？")
+            .then(() => {
+              //根据id删除品牌
+              this.$http.get("/item/brand/delete/" + id)
+                .then(() => {
+                this.$message.success("删除成功！");
+                // console.log(this.pagination.page);
+                this.loadData();
+              })
+                .catch(() => {
+                // 关闭窗口
+                this.$message.success("删除失败！");
+              })
             })
-            .catch(() => {
-              // 关闭窗口
-              this.dialog = false;
-              this.$message.success("删除失败！");
-            });
-        }
+          .catch(() => {
+            // 关闭窗口
+          })
+
 
       },
       closeWindow(){
