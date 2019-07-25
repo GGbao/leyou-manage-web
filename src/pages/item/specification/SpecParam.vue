@@ -147,7 +147,10 @@ export default {
           segments:[],
           numeric:false,
           searching:false,
-          generic:false}
+          generic: false
+
+      }
+      this.isEdit = false;//修正添加的flag
       this.show = true;
     },
     deleteParam(id) {
@@ -156,6 +159,7 @@ export default {
             this.$http.delete("/item/spec/param/" + id)
             .then(() => {
                 this.$message.success("删除成功");
+              this.loadData();//删除后刷新
             })
             .catch(() => {
                 this.$message.error("删除失败");
