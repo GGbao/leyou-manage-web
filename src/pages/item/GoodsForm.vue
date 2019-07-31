@@ -11,6 +11,7 @@
     </v-stepper-header>
     <v-stepper-items>
       <!--1、基本信息-->
+
       <v-stepper-content step="1">
         <v-flex class="xs10 mx-auto">
           <v-form v-model="valid" ref="basic">
@@ -54,7 +55,7 @@
       </v-stepper-content>
       <!--2、商品描述-->
       <v-stepper-content step="2">
-        <v-editor v-model="goods.spuDetail.description" upload-url="/upload/image"/>
+        <v-editor v-model="goods.spuDetail.description" upload-url="/upload/image" />
       </v-stepper-content>
       <!--3、规格参数-->
       <v-stepper-content step="3">

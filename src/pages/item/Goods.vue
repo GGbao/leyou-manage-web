@@ -45,11 +45,11 @@
           <v-btn icon @click="editGoods(props.item)">
             <i class="el-icon-edit"/>
           </v-btn>
-          <v-btn icon>
+          <v-btn icon @click="deleteGoods(props.item)">
             <i class="el-icon-delete"/>
           </v-btn>
-          <v-btn icon v-if="props.item.saleable">下架</v-btn>
-          <v-btn icon v-else>上架</v-btn>
+          <v-btn icon v-if="props.item.saleable" @click="soldOut(props.item)">下架</v-btn>
+          <v-btn icon v-else @click="putAway(props.item)">上架</v-btn>
         </td>
       </template>
     </v-data-table>
@@ -164,6 +164,37 @@
         this.show = true;
         // 获取要编辑的goods
         this.oldGoods = oldGoods;
+      },
+      deleteGoods(oldGoods) {
+        this.$message.confirm("确认要删除该商品吗？")
+          .then(() => {
+            this.$http.delete("/item/goods/delete/" + oldGoods.id)
+              .then(() => {
+                this.$message.success("删除成功");
+                this.getDataFromServer();//删除后刷新
+              })
+              .catch(() => {
+                this.$message.error("删除失败");
+              })
+          })
+      },
+      async soldOut(oldGoods) {
+        this.$http.get("/item/goods/soldout/" + oldGoods.id)
+          .then(() => {
+            this.$message.success("删除成功");
+            this.getDataFromServer();//删除后刷新
+          })
+          .catch(() => {
+            this.$message.error("删除失败");
+          })
+
+  },
+      async putAway(oldGoods) {
+        this.$http.get("/item/goods/putaway/" + oldGoods.id)
+      .then(() => {
+          this.getDataFromServer();
+        })
+          .catch();
       },
       closeWindow() {
         console.log(1)

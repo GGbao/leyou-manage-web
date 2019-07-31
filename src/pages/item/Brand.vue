@@ -96,7 +96,7 @@
         deep: true, // deep为true，会监视pagination的属性及属性中的对象属性变化
         handler() {
           // 变化后的回调函数，这里我们再次调用getDataFromServer即可
-          console.log(this.pagination.page)
+          console.log("重新加载页码："+this.pagination.page)
           this.getDataFromServer();
 
         }
@@ -171,8 +171,8 @@
               this.$http.get("/item/brand/delete/" + id)
                 .then(() => {
                 this.$message.success("删除成功！");
-                // console.log(this.pagination.page);
-                this.loadData();
+                console.log("删除的页码："+this.pagination.page);
+                  this.getDataFromServer();
               })
                 .catch(() => {
                 // 关闭窗口
