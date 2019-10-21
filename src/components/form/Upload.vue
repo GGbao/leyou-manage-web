@@ -101,6 +101,8 @@
         this.show = true;
       },
       removeSingle() {
+        // console.log(this.$parent.$parent.brand.image);
+        this.$parent.$parent.brand.image = "";
         this.dialogImageUrl = "";
         this.$refs.singleUpload.clearFiles();
       }
